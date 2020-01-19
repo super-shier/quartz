@@ -2,7 +2,7 @@ package com.li.yun.biao.quartz.controller;
 
 import com.li.yun.biao.quartz.common.enums.ErrorCode;
 import com.li.yun.biao.quartz.common.response.QuartzJobDetailResponse;
-import com.li.yun.biao.quartz.entity.ApiResponse;
+import com.li.yun.biao.quartz.common.response.ApiResponse;
 import com.li.yun.biao.quartz.entity.QuartzJobDetailEntity;
 import com.li.yun.biao.quartz.service.QuartzJobDetailService;
 import io.swagger.annotations.Api;

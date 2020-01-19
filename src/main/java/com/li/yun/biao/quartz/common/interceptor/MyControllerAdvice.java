@@ -1,7 +1,7 @@
 package com.li.yun.biao.quartz.common.interceptor;
 
 import com.li.yun.biao.quartz.common.enums.ErrorCode;
-import com.li.yun.biao.quartz.entity.ApiResponse;
+import com.li.yun.biao.quartz.common.response.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package com.li.yun.biao.quartz.entity;
+package com.li.yun.biao.quartz.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.li.yun.biao.quartz.common.enums.ErrorCode;
