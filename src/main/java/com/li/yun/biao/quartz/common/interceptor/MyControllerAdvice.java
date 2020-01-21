@@ -92,7 +92,7 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, buildResponse(ex), null, status, request);
     }
 
-    private ApiResponse buildResponse(Exception ex) {
+    private ApiResponse<Void> buildResponse(Exception ex) {
         String errorMsg = null;
         if (ex instanceof BindException) {
             BindException e = (BindException) ex;
@@ -105,12 +105,12 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
         return buildResponse(SYSTEM_EXCEPTION_CODE, errorMsg);
     }
 
-    private ApiResponse buildResponse(String code, String errorMsg) {
+    private ApiResponse<Void> buildResponse(String code, String errorMsg) {
         ErrorCode enumErrCode = ErrorCode.find(String.valueOf(code));
         if (Objects.nonNull(enumErrCode)) {
-            return ApiResponse.error(enumErrCode);
+            return new ApiResponse<>(enumErrCode.getCode(), enumErrCode.getMsg());
         } else {
-            return ApiResponse.error(String.valueOf(code), errorMsg);
+            return new ApiResponse<>(String.valueOf(code), errorMsg);
         }
     }
 

@@ -1,13 +1,15 @@
 package com.li.yun.biao.quartz.controller;
 
 import com.li.yun.biao.quartz.common.enums.ErrorCode;
-import com.li.yun.biao.quartz.common.response.QuartzJobDetailResponse;
 import com.li.yun.biao.quartz.common.response.ApiResponse;
+import com.li.yun.biao.quartz.common.response.QuartzJobDetailResponse;
 import com.li.yun.biao.quartz.entity.QuartzJobDetailEntity;
 import com.li.yun.biao.quartz.service.QuartzJobDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -28,6 +31,7 @@ import java.util.List;
 @RequestMapping(value = "/job")
 @Api(value = "Quartz任务接口任务", tags = {"Quartz任务接口任务"})
 public class JobController {
+    private static final Logger logger = LoggerFactory.getLogger(JobController.class);
     /**
      * 加入Qulifier注解，通过名称注入bean
      */
@@ -41,12 +45,7 @@ public class JobController {
     @PostMapping("/add")
     public ApiResponse<Void> addJob(QuartzJobDetailEntity quartz) {
         try {
-            /**
-             * 获取Scheduler实例、废弃、使用自动注入的scheduler、否则spring的service将无法注入
-             * Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-             * 如果是修改 ,展示旧的任务
-             */
-            if (quartz.getOldJobGroup() != null) {
+            if (Objects.nonNull(quartz.getOldJobGroup())) {
                 JobKey key = new JobKey(quartz.getOldJobName(), quartz.getOldJobGroup());
                 scheduler.deleteJob(key);
             }
@@ -65,20 +64,19 @@ public class JobController {
 
             //交由Scheduler安排触发
             scheduler.scheduleJob(job, trigger);
+            return new ApiResponse<>();
         } catch (Exception e) {
-            e.printStackTrace();
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR);
+            logger.error("********Exception:{}", e.getLocalizedMessage());
+            return new ApiResponse<>(ErrorCode.SYSTEM_ERROR.getCode(), ErrorCode.SYSTEM_ERROR.getMsg());
         }
-        return ApiResponse.success(null);
     }
 
     @ApiOperation(value = "任务列表")
     @PostMapping("/list")
-    public ApiResponse<QuartzJobDetailResponse> getJobList(@RequestParam(required = false) String jobName, @RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+    public ApiResponse<QuartzJobDetailResponse> getJobList(String jobName, @RequestParam Integer pageNo, @RequestParam Integer pageSize) {
         List<QuartzJobDetailEntity> dataList = quartzJobDetailService.getQuartzJobList(jobName, (pageNo - 1) * pageSize, pageSize);
         Integer totalCount = quartzJobDetailService.listQuartzEntityNum(jobName);
-        QuartzJobDetailResponse quartzJobDetailResponse = new QuartzJobDetailResponse(dataList, totalCount, (totalCount / pageNo) + 1);
-        return ApiResponse.success(quartzJobDetailResponse);
+        return new ApiResponse<>(new QuartzJobDetailResponse(dataList, totalCount, (totalCount / pageNo) + 1));
     }
 
     @ApiOperation(value = "触发任务")
@@ -87,11 +85,11 @@ public class JobController {
         try {
             JobKey key = new JobKey(quartz.getJobName(), quartz.getJobGroup());
             scheduler.triggerJob(key);
+            return new ApiResponse<>();
         } catch (Exception e) {
-            e.printStackTrace();
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR);
+            logger.error("********Exception:{}", e.getLocalizedMessage());
+            return new ApiResponse<>(ErrorCode.SYSTEM_ERROR.getCode(), ErrorCode.SYSTEM_ERROR.getMsg());
         }
-        return ApiResponse.success(null);
     }
 
     @ApiOperation(value = "停止任务")
@@ -100,11 +98,11 @@ public class JobController {
         try {
             JobKey key = new JobKey(quartz.getJobName(), quartz.getJobGroup());
             scheduler.pauseJob(key);
+            return new ApiResponse<>();
         } catch (Exception e) {
-            e.printStackTrace();
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR);
+            logger.error("********Exception:{}", e.getLocalizedMessage());
+            return new ApiResponse<>(ErrorCode.SYSTEM_ERROR.getCode(), ErrorCode.SYSTEM_ERROR.getMsg());
         }
-        return ApiResponse.success(null);
     }
 
     @ApiOperation(value = "恢复任务")
@@ -113,11 +111,11 @@ public class JobController {
         try {
             JobKey key = new JobKey(quartz.getJobName(), quartz.getJobGroup());
             scheduler.resumeJob(key);
+            return new ApiResponse<>();
         } catch (Exception e) {
-            e.printStackTrace();
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR);
+            logger.error("********Exception:{}", e.getLocalizedMessage());
+            return new ApiResponse<>(ErrorCode.SYSTEM_ERROR.getCode(), ErrorCode.SYSTEM_ERROR.getMsg());
         }
-        return ApiResponse.success(null);
     }
 
     @ApiOperation(value = "移除任务")
@@ -131,12 +129,11 @@ public class JobController {
             scheduler.unscheduleJob(triggerKey);
             //删除任务
             scheduler.deleteJob(JobKey.jobKey(quartz.getJobName(), quartz.getJobGroup()));
-            System.out.println("removeJob:" + JobKey.jobKey(quartz.getJobName()));
+            logger.info("********removeJob:{}", JobKey.jobKey(quartz.getJobName()));
+            return new ApiResponse<>();
         } catch (Exception e) {
-            e.printStackTrace();
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR);
+            logger.error("********Exception:{}", e.getLocalizedMessage());
+            return new ApiResponse<>(ErrorCode.SYSTEM_ERROR.getCode(), ErrorCode.SYSTEM_ERROR.getMsg());
         }
-        return ApiResponse.success(null);
     }
-
 }

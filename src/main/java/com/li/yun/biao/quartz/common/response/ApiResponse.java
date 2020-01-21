@@ -1,7 +1,6 @@
 package com.li.yun.biao.quartz.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.li.yun.biao.quartz.common.enums.ErrorCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,31 +25,17 @@ public class ApiResponse<T> implements Serializable {
     @ApiModelProperty(value = "响应数据")
     private T data;
 
-
-    public static ApiResponse error(String errorCode, String errorMsg) {
-        ApiResponse response = new ApiResponse();
-        response.setErrorCode(errorCode);
-        response.setErrorMsg(errorMsg);
-        return response;
+    public ApiResponse() {
+        this.success = true;
     }
 
-    public static ApiResponse success() {
-        ApiResponse response = new ApiResponse();
-        response.setSuccess(true);
-        return response;
+    public ApiResponse(String errorCode, String errorMsg) {
+        this.errorCode = errorCode;
+        this.errorMsg = errorMsg;
     }
 
-    public static ApiResponse success(Object data) {
-        ApiResponse response = new ApiResponse();
-        response.setSuccess(true);
-        response.setData(data);
-        return response;
-    }
-
-    public static ApiResponse error(ErrorCode errorCode) {
-        ApiResponse response = new ApiResponse();
-        response.setErrorCode(errorCode.getCode());
-        response.setErrorMsg(errorCode.getMsg());
-        return response;
+    public ApiResponse(T data) {
+        this.success = true;
+        this.data = data;
     }
 }
