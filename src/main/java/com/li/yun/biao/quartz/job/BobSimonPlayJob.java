@@ -3,6 +3,10 @@ package com.li.yun.biao.quartz.job;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 
 /**
@@ -10,7 +14,8 @@ import org.quartz.JobExecutionException;
  * @Date : 2020-01-15 16:06
  * @Description: Simon创建的任务
  **/
-public class BobSimonPlayJob implements Job {
+public class BobSimonPlayJob implements Job, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BobSimonPlayJob.class);
 
     /**
      * job执行的内容
@@ -20,10 +25,7 @@ public class BobSimonPlayJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        /**
-         *  怎么执行这里面的任务呢哈
-         */
-        System.out.println("Bob Simon is an awesome man in the world!");
+        logger.info("******Bob Simon is an awesome man in the world!");
     }
 
 }
